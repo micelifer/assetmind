@@ -6,12 +6,12 @@ import { getStorage } from "firebase/storage";
 
 // Your web app's Firebase configuration
 const firebaseConfig = {
-  apiKey: "your-api-key-here",
-  authDomain: "your-project-id.firebaseapp.com",
-  projectId: "your-project-id",
-  storageBucket: "your-project-id.appspot.com",
-  messagingSenderId: "your-messaging-sender-id",
-  appId: "your-app-id"
+  apiKey: "AIzaSyC2J7egXWqisJBMS9IW-4h32O6XhfGh6Os",
+  authDomain: "assetmind-v2.firebaseapp.com",
+  projectId: "assetmind-v2",
+  storageBucket: "assetmind-v2.firebasestorage.app",
+  messagingSenderId: "434894047551",
+  appId: "1:434894047551:web:7b6318671ed1270759eb8a"
 };
 
 // Initialize Firebase
