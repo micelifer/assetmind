@@ -1,5 +1,7 @@
 import React, { useState, useMemo } from 'react';
 import { Search, Settings, Grid, List, Folder, FolderOpen, Image, Box, Palette, Volume2, Sun } from 'lucide-react';
+import { auth } from './firebase';
+import { onAuthStateChanged, signInAnonymously, User } from 'firebase/auth';
 import AssetGrid from './components/AssetGrid';
 import AssetDetails from './components/AssetDetails';
 import FilterSidebar from './components/FilterSidebar';
@@ -9,6 +11,7 @@ import { Asset, AssetType, FilterState } from './types/Asset';
 import { mockAssets } from './data/mockAssets';
 
 function App() {
+  const [user, setUser] = useState<User | null>(null);
   const [assets, setAssets] = useState<Asset[]>(mockAssets);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
@@ -23,6 +26,20 @@ function App() {
     resolution: null,
     fileSize: null
   });
+
+  useEffect(() => {
+    signInAnonymously(auth);
+    
+    const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
+      if (currentUser) {
+        setUser(currentUser);
+      } else {
+        setUser(null);
+      }
+    });
+
+    return () => unsubscribe();
+  }, []);
 
   const filteredAssets = useMemo(() => {
     return assets.filter(asset => {
