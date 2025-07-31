@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Settings, Grid, List, Folder, FolderOpen, Image, Box, Palette, Volume2, Sun } from 'lucide-react';
 import { auth } from './firebase';
 import { onAuthStateChanged, signInAnonymously, User } from 'firebase/auth';
