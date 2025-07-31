@@ -1,18 +1,18 @@
 import React, { useState, useMemo, useEffect } from 'react';
 import { Search, Settings, Grid, List, Folder, FolderOpen, Image, Box, Palette, Volume2, Sun } from 'lucide-react';
-import { auth } from './firebase';
+import { auth, db } from './firebase';
 import { onAuthStateChanged, signInAnonymously, User } from 'firebase/auth';
+import { collection, query, where, onSnapshot } from 'firebase/firestore';
 import AssetGrid from './components/AssetGrid';
 import AssetDetails from './components/AssetDetails';
 import FilterSidebar from './components/FilterSidebar';
 import SearchBar from './components/SearchBar';
 import PathSelector from './components/PathSelector';
 import { Asset, AssetType, FilterState } from './types/Asset';
-import { mockAssets } from './data/mockAssets';
 
 function App() {
   const [user, setUser] = useState<User | null>(null);
-  const [assets, setAssets] = useState<Asset[]>(mockAssets);
+  const [assets, setAssets] = useState<Asset[]>([]);
   const [selectedAsset, setSelectedAsset] = useState<Asset | null>(null);
   const [searchQuery, setSearchQuery] = useState('');
   const [viewMode, setViewMode] = useState<'grid' | 'list'>('grid');
@@ -33,8 +33,27 @@ function App() {
     const unsubscribe = onAuthStateChanged(auth, (currentUser) => {
       if (currentUser) {
         setUser(currentUser);
+        
+        // Crear consulta a Firestore para obtener assets del usuario
+        const assetsQuery = query(
+          collection(db, 'assets'),
+          where('userId', '==', currentUser.uid)
+        );
+        
+        // Escuchar cambios en tiempo real
+        const unsubscribeAssets = onSnapshot(assetsQuery, (snapshot) => {
+          const assetsData = snapshot.docs.map(doc => ({
+            id: doc.id,
+            ...doc.data()
+          } as Asset));
+          setAssets(assetsData);
+        });
+        
+        // Limpiar listener de assets cuando el componente se desmonte
+        return () => unsubscribeAssets();
       } else {
         setUser(null);
+        setAssets([]);
       }
     });
 
